@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f4f8f6">
+  <meta name="description" content="Ứng dụng PWA điều tra hiện trường dành cho người phỏng vấn - hoạt động offline và đồng bộ Google Sheets">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hiện Trường">
+  
+  <title>Điều Tra Hiện Trường - Field Survey PWA</title>
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <script type="module" crossorigin src="./assets/index-BDtgVxKD.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DSYuza5E.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Top Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <img src="./icons/icon-192.png" alt="App Icon" class="brand-icon">
+        <div class="brand-info">
+          <h1>Điều Tra Hiện Trường</h1>
+          <p id="sub-header-text">Khảo sát & Ghi nhận thực địa</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Online / Offline Badge -->
+        <div id="network-badge" class="status-badge" title="Trạng thái mạng">
+          <span class="status-dot"></span>
+          <span id="network-text">Online</span>
+        </div>
+
+        <!-- Notification Permission Button -->
+        <button id="btn-request-notify" class="icon-btn" title="Bật thông báo push" aria-label="Bật thông báo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+          </svg>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" class="icon-btn" title="Chuyển chế độ Sáng/Tối" aria-label="Đổi giao diện">
+          <span id="theme-icon">☀️</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT - TABS -->
+    <main class="app-main">
+      <!-- TAB 1: NEW SURVEY FORM -->
+      <section id="tab-survey" class="tab-pane active">
+        <!-- Live Timestamp Chip -->
+        <div class="meta-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span id="live-time-display">Đang tải thời gian...</span>
+        </div>
+
+        <!-- Form Card -->
+        <form id="survey-form" class="card" autocomplete="off">
+          <h2 class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" y1="8" x2="19" y2="14"></line>
+              <line x1="22" y1="11" x2="16" y2="11"></line>
+            </svg>
+            Thông Tin Phiên Phỏng Vấn
+          </h2>
+
+          <!-- Interviewer Name Input -->
+          <div class="form-group">
+            <label class="form-label" for="interviewer-name">Tên Người Phỏng Vấn / Điều Tra Viên *</label>
+            <input 
+              type="text" 
+              id="interviewer-name" 
+              class="form-input" 
+              placeholder="VD: Nguyễn Văn A (Đoàn điều tra số 1)" 
+              required
+            >
+          </div>
+
+          <!-- GPS Location Box -->
+          <div class="form-group">
+            <label class="form-label">Tọa Độ Hiện Trường (GPS Geolocation) *</label>
+            <div class="location-box">
+              <div class="location-details">
+                <div class="coord-display">
+                  <span id="gps-coords" class="coord-value">Đang lấy tín hiệu GPS vệ tinh...</span>
+                  <span id="gps-accuracy" class="coord-accuracy">Vui lòng cấp quyền vị trí nếu được hỏi</span>
+                </div>
+                <div class="location-actions">
+                  <button type="button" id="btn-refresh-gps" class="btn-sm" title="Lấy lại tọa độ">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    Làm mới
+                  </button>
+                  <a id="btn-view-map" href="#" target="_blank" class="btn-sm" style="display: none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                      <line x1="8" y1="2" x2="8" y2="18"></line>
+                      <line x1="16" y1="6" x2="16" y2="22"></line>
+                    </svg>
+                    Bản đồ
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content / Notes Textarea -->
+          <div class="form-group">
+            <label class="form-label" for="survey-content">Nội Dung Phỏng Vấn / Ghi Nhận Hiện Trường *</label>
+            <textarea 
+              id="survey-content" 
+              class="form-textarea" 
+              placeholder="Nhập nội dung phỏng vấn đối tượng, kết quả hỏi, hiện trạng khu vực, diễn biến sự việc ghi nhận..." 
+              required
+            ></textarea>
+          </div>
+
+          <!-- Field Photo Section -->
+          <div class="form-group">
+            <label class="form-label">Ảnh Chụp Hiện Trường (Có đóng dấu ngày giờ tự động)</label>
+            
+            <div class="camera-section">
+              <!-- Action Buttons -->
+              <div class="camera-controls">
+                <button type="button" id="btn-camera-capture" class="camera-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                  <span>Chụp Ảnh Camera</span>
+                </button>
+                <!-- Direct Camera Native Trigger -->
+                <input type="file" id="camera-capture-input" accept="image/*" capture="environment" style="display: none;">
+
+                <button type="button" id="btn-gallery-pick" class="camera-btn" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.35); color: #818cf8;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>Chọn Từ Thư Viện</span>
+                </button>
+                <input type="file" id="file-gallery-input" accept="image/*" style="display: none;">
+              </div>
+
+              <!-- Photo Preview Container -->
+              <div id="photo-preview-card" class="photo-preview-card">
+                <img id="photo-preview-img" class="photo-preview-img" src="" alt="Ảnh hiện trường">
+                <div class="photo-overlay-info">
+                  <span id="photo-meta-size">Kích thước: 0 KB</span>
+                  <span id="photo-meta-watermark">✓ Đã đóng dấu GPS & Giờ</span>
+                </div>
+                <button type="button" id="btn-remove-photo" class="photo-remove-btn" title="Xóa ảnh">&times;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="btn-save-survey" class="btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>LƯU PHIÊN ĐIỀU TRA (OFFLINE/ONLINE)</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- TAB 2: SURVEY HISTORY & SESSIONS -->
+      <section id="tab-history" class="tab-pane">
+        <div class="history-header">
+          <!-- Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div id="stat-total" class="stat-number">0</div>
+              <div class="stat-label">Tổng Phiên</div>
+            </div>
+            <div class="stat-card">
+              <div id="stat-synced" class="stat-number" style="color: var(--accent-emerald);">0</div>
+              <div class="stat-label">Đã Lên Sheet</div>
+            </div>
+            <div class="stat-card">
+              <div id="stat-pending" class="stat-number" style="color: var(--accent-amber);">0</div>
+              <div class="stat-label">Chờ Đồng Bộ</div>
+            </div>
+          </div>
+
+          <!-- Sync Banner -->
+          <div id="sync-banner" class="sync-banner">
+            <div class="sync-banner-info">
+              <p id="sync-banner-title">Sẵn sàng đồng bộ dữ liệu</p>
+              <p id="sync-banner-sub">Tự động đẩy dữ liệu và ảnh lên Google Sheet</p>
+            </div>
+            <button id="btn-sync-all" class="btn-sm" style="background: var(--primary-gradient); color: #fff; padding: 8px 14px; font-size: 0.85rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>Đồng Bộ Ngay</span>
+            </button>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="filter-chips">
+            <button class="chip active" data-filter="all">Tất Cả</button>
+            <button class="chip" data-filter="pending">Chờ Đồng Bộ (🟡)</button>
+            <button class="chip" data-filter="synced">Đã Đồng Bộ (🟢)</button>
+          </div>
+        </div>
+
+        <!-- Surveys List Container -->
+        <div id="surveys-list">
+          <!-- Dynamic render from IndexedDB -->
+        </div>
+      </section>
+
+      <!-- TAB 3: SETTINGS & GOOGLE SHEET CONFIG -->
+      <section id="tab-settings" class="tab-pane">
+        <div class="card">
+          <h2 class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            Kết Nối Google Sheets & Drive
+          </h2>
+
+          <div class="settings-group">
+            <div class="form-group">
+              <label class="form-label" for="setting-script-url">URL Ứng Dụng Web (Google Apps Script) *</label>
+              <input 
+                type="url" 
+                id="setting-script-url" 
+                class="form-input" 
+                placeholder="https://script.google.com/macros/s/.../exec"
+              >
+              <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">
+                Đường link Web App được cấp khi bấm [Triển khai mới] trên Google Apps Script.
+              </small>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button id="btn-save-settings" class="btn-sm" style="background: #0284c7; color: #fff; padding: 10px 16px;">
+                Lưu Cấu Hình
+              </button>
+              <button id="btn-test-script" class="btn-sm" style="padding: 10px 16px;">
+                Kiểm Tra Kết Nối
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step-by-step Setup Guide Card -->
+        <div class="card">
+          <h3 class="card-title" style="font-size: 0.95rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Hướng Dẫn Tạo Google Sheet & Apps Script
+          </h3>
+
+          <div class="guide-box">
+            <div class="guide-step" data-step="1">
+              Tạo một file <strong>Google Sheet mới</strong> trên Google Drive của bạn.
+            </div>
+            <div class="guide-step" data-step="2">
+              Bấm menu <strong>Tiện ích mở rộng (Extensions)</strong> &gt; <strong>Apps Script</strong>.
+            </div>
+            <div class="guide-step" data-step="3">
+              Xóa code cũ, bấm nút dưới đây để <strong>Sao chép toàn bộ mã nguồn Apps Script</strong> và dán vào.
+              <button id="btn-copy-code" class="btn-sm" style="margin-top: 8px; width: 100%; justify-content: center; background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #38bdf8;">
+                📋 Sao Chép Mã Google Apps Script
+              </button>
+            </div>
+            <div class="guide-step" data-step="4">
+              Nhấn <strong>Triển khai (Deploy)</strong> &gt; <strong>Triển khai mới (New deployment)</strong> &gt; Loại: <strong>Ứng dụng web (Web app)</strong>.
+              <br>• Ai có quyền truy cập: Chọn <strong>Bất kỳ ai (Anyone)</strong>.
+            </div>
+            <div class="guide-step" data-step="5">
+              Copy đường link nhận được (dạng <code>.../exec</code>) dán vào ô trên và bấm <strong>Lưu Cấu Hình</strong>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Storage Management Danger Zone -->
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.25);">
+          <h3 class="card-title" style="color: var(--accent-rose); font-size: 0.95rem;">
+            Bộ Nhớ Thiết Bị
+          </h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+            Dữ liệu offline được lưu an toàn trong IndexedDB của trình duyệt. Bạn có thể xuất file sao lưu JSON hoặc làm trống bộ nhớ sau khi đã đồng bộ toàn bộ.
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <button id="btn-export-json" class="btn-sm">
+              📥 Xuất File Sao Lưu (.JSON)
+            </button>
+            <button id="btn-clear-cache" class="btn-sm" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.4);">
+              🗑️ Xóa Bộ Nhớ Cục Bộ
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION TABS -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="tab-survey">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        <span>Khảo Sát</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>Lịch Sử</span>
+        <span id="nav-pending-badge" class="nav-badge" style="display: none;">0</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Cài Đặt</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Fullscreen Photo Modal Lightbox -->
+  <div id="image-modal" class="modal-backdrop">
+    <button id="modal-close" class="modal-close">&times;</button>
+    <img id="modal-image" class="modal-img" src="" alt="Ảnh phóng to">
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "field-survey-pwa",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "build:docs": "vite build --outDir docs",
+    "preview": "vite preview",
+    "cap:sync": "npm run build && cap sync android",
+    "android:add": "cap add android",
+    "android:open": "cap open android",
+    "android:build": "npm run cap:sync && cd android && gradlew.bat assembleDebug"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.6.9",
+    "typescript": "^5.9.3",
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.6.9",
+    "@capacitor/camera": "^7.0.5",
+    "@capacitor/core": "^7.6.9",
+    "@capacitor/geolocation": "^7.1.8"
+  }
+}

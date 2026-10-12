@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#f8fafc" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Clipboard Board Base -->
+  <g filter="url(#dropShadow)">
+    <rect x="116" y="110" width="280" height="320" rx="28" fill="url(#cardGrad)" />
+    
+    <!-- Top Clip -->
+    <path d="M 206 88 L 306 88 C 314 88 320 94 320 102 L 320 126 C 320 134 314 140 306 140 L 206 140 C 198 140 192 134 192 126 L 192 102 C 192 94 198 88 206 88 Z" fill="#0369a1" />
+    <circle cx="256" cy="114" r="10" fill="#ffffff" />
+    
+    <!-- Clipboard lines -->
+    <rect x="156" y="180" width="130" height="18" rx="9" fill="#0284c7" />
+    <rect x="156" y="218" width="200" height="14" rx="7" fill="#94a3b8" />
+    <rect x="156" y="248" width="170" height="14" rx="7" fill="#cbd5e1" />
+    
+    <!-- Checklist items -->
+    <circle cx="170" cy="296" r="10" fill="#10b981" />
+    <path d="M 165 296 L 169 300 L 176 292" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <rect x="194" y="290" width="140" height="14" rx="7" fill="#64748b" />
+
+    <circle cx="170" cy="336" r="10" fill="#10b981" />
+    <path d="M 165 336 L 169 340 L 176 332" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <rect x="194" y="330" width="110" height="14" rx="7" fill="#64748b" />
+    
+    <!-- Pin / Camera Badge -->
+    <g transform="translate(310, 310)">
+      <circle cx="45" cy="45" r="46" fill="#f43f5e" />
+      <!-- Camera icon inside badge -->
+      <path d="M 33 34 L 37 30 L 53 30 L 57 34 L 63 34 C 66 34 68 36 68 39 L 68 57 C 68 60 66 62 63 62 L 27 62 C 24 62 22 60 22 57 L 22 39 C 22 36 24 34 27 34 Z" fill="#ffffff" />
+      <circle cx="45" cy="48" r="8" fill="#f43f5e" />
+      <circle cx="45" cy="48" r="5" fill="#ffffff" />
+    </g>
+  </g>
+</svg>
